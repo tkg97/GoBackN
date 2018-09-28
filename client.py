@@ -20,7 +20,7 @@ receive_window = 1
 expected_ack = 0
 expected_pkt = 0
 frame_to_send = 0
-timer_duration = 500 #in milliseconds
+timer_duration = 50000 #in milliseconds
 
 q = Queue(transmit_window)
 time_stamp_q = Queue(transmit_window)
@@ -42,6 +42,7 @@ while True:
 	except TimeoutError:
 		pass
 
+
 sender_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 ip = '169.254.224.230'
 port = 6653
@@ -49,6 +50,7 @@ address = (ip, port)
 sender_server.bind(address)
 sender_server.listen(1)
 client_receiver, __addr_receiver = sender_server.accept()
+base_time = time.time()*1000
 
 def respond_to_pck_resending(resend_pkts):
 	#Resend all the buffered packets
@@ -69,12 +71,12 @@ def pkt_sender(resend_pkts):
 	global max_seq_num
 	while(True):
 		if(resend_pkts.is_set()) : continue
-		cur_time = time.time()*1000
+		cur_time = time.time()*1000 - base_time
 		if(q.full()==False):
 			if (tempq.empty()) :
 				# create and send packet here
 				new_packet = data_frame(frame_to_send % max_seq_num)
-				cur_time = time.time()*1000					
+				cur_time = time.time()*1000	- base_time				
 
 				print ("generated packet %d, at time %f" %(frame_to_send, cur_time))
 
@@ -89,7 +91,7 @@ def pkt_sender(resend_pkts):
 			else :
 				#Get that pack from tempq top
 				new_packet = tempq.get()
-				cur_time = time.time()*1000
+				cur_time = time.time()*1000 - base_time
 
 				print ("Trying to resend the packet number %d at time %f" %(new_packet.data_num, cur_time))
 				
@@ -100,7 +102,7 @@ def pkt_sender(resend_pkts):
 				if (should_drop(packet_drop_probability) == False) :
 					print ("resent the packet number %d at time %f" %(new_packet.data_num, cur_time))
 					client_receiver.send(new_packet_string)
-			# time.sleep(0.1)
+			time.sleep(0.0025)
 
 
 def pkt_receiver(resend_pkts):
@@ -112,7 +114,7 @@ def pkt_receiver(resend_pkts):
 	global time_stamp_q
 	global timer_duration
 	while(True) :
-		cur_time = time.time()*1000
+		cur_time = time.time()*1000 - base_time
 		if (time_stamp_q.empty() == False) :
 			if abs(cur_time - time_stamp_q.top()) >= timer_duration :
 				# We should have got the acknowledgement for this packet by now
@@ -121,11 +123,12 @@ def pkt_receiver(resend_pkts):
 				resend_pkts.set()
 				respond_to_pck_resending(resend_pkts)
 
-		ready = select.select([client_sender],[],[],0.001)
+		ready = select.select([client_sender],[],[],0.005)
 		if(ready[0]):
-			data = client_sender.recv(1024)
+			# print ("hey")			
+			data = client_sender.recv(4096)
 			packet = pickle.loads(data)
-			cur_time = time.time()*1000
+			cur_time = time.time()*1000 - base_time
 			if isinstance(packet, data_frame) :
 				if packet.data_num == expected_pkt :
 					print ("received data packet - %d at time %f" %(expected_pkt, cur_time))
@@ -133,17 +136,21 @@ def pkt_receiver(resend_pkts):
 					ack = ack_frame(expected_pkt)
 					ack_string = pickle.dumps(ack)
 					ready = select.select([],[client_receiver],[])
-					expected_pkt = (expected_pkt + 1)%max_seq_num
 					print ("sending ack for data packet - %d at time %f" %(expected_pkt, cur_time))
 					if (should_drop(ack_drop_probability) == False) :
 						print ("Success - ack for data packet - %d at time %f" %(expected_pkt, cur_time))
 						client_receiver.send(ack_string)
+					expected_pkt = (expected_pkt + 1)%max_seq_num
 			elif isinstance(packet, ack_frame) :
 				print ("received ack for data packet - %d at time %f" %(packet.ack_num, cur_time))
-
-				while((q.empty==False) and ((q.top()).data_num != packet.ack_num)) :
+				# print ("**** %d $$$$" %q.size())				
+				while((q.empty()==False) and ((q.top()).data_num != packet.ack_num)) :
 					q.get()
 					time_stamp_q.get()
+				if ((q.empty() == False) and ((q.top()).data_num == packet.ack_num)) :
+					q.get()
+					time_stamp_q.get()
+				# print ("**** %d" %q.size())								
 
 
 if __name__ == '__main__':
