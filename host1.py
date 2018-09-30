@@ -171,7 +171,6 @@ def pkt_receiver(resend_pkts):
         except Exception as __e:
             pass
 
-
 if __name__ == '__main__':
     resend_pkts = threading.Event()
 

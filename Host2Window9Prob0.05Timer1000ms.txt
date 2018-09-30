@@ -1,0 +1,73 @@
+Sending Summary in last 10 seconds
+Total fresh packets sent                                     : 223
+Total packets dropped in between                             : 9
+Total Packet resent (due to packet dropping or ack dropping) : 79
+Total volume of fresh packets sent (in Bytes)                : 36870
+Total volume of resent packets (in Bytes)                    : 13537
+**************************************************************************
+
+
+Receiving summary in last 10 seconds
+Total fresh packets received                                 : 148
+Total volume of received packets (in Bytes)                  : 24965
+**************************************************************************
+
+
+Sending Summary in last 10 seconds
+Total fresh packets sent                                     : 184
+Total packets dropped in between                             : 10
+Total Packet resent (due to packet dropping or ack dropping) : 77
+Total volume of fresh packets sent (in Bytes)                : 29699
+Total volume of resent packets (in Bytes)                    : 12289
+**************************************************************************
+
+
+Receiving summary in last 10 seconds
+Total fresh packets received                                 : 125
+Total volume of received packets (in Bytes)                  : 20961
+**************************************************************************
+
+
+Sending Summary in last 10 seconds
+Total fresh packets sent                                     : 132
+Total packets dropped in between                             : 8
+Total Packet resent (due to packet dropping or ack dropping) : 74
+Total volume of fresh packets sent (in Bytes)                : 21226
+Total volume of resent packets (in Bytes)                    : 12616
+**************************************************************************
+
+
+Receiving summary in last 10 seconds
+Total fresh packets received                                 : 197
+Total volume of received packets (in Bytes)                  : 33263
+**************************************************************************
+
+
+Sending Summary in last 10 seconds
+Total fresh packets sent                                     : 180
+Total packets dropped in between                             : 10
+Total Packet resent (due to packet dropping or ack dropping) : 79
+Total volume of fresh packets sent (in Bytes)                : 28091
+Total volume of resent packets (in Bytes)                    : 12990
+**************************************************************************
+
+
+Receiving summary in last 10 seconds
+Total fresh packets received                                 : 198
+Total volume of received packets (in Bytes)                  : 32715
+**************************************************************************
+
+
+Sending Summary in last 10 seconds
+Total fresh packets sent                                     : 174
+Total packets dropped in between                             : 7
+Total Packet resent (due to packet dropping or ack dropping) : 79
+Total volume of fresh packets sent (in Bytes)                : 28853
+Total volume of resent packets (in Bytes)                    : 13653
+**************************************************************************
+
+
+Receiving summary in last 10 seconds
+Total fresh packets received                                 : 197
+Total volume of received packets (in Bytes)                  : 31288
+**************************************************************************
