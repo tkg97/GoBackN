@@ -12,7 +12,6 @@ from frame import data_frame, ack_frame
 transmit_window = 7
 max_seq_num = transmit_window + 1
 receive_window = 1
-expected_ack = 0
 expected_pkt = 0
 frame_to_send = 0
 timer_duration = 1000 #in milliseconds
@@ -124,7 +123,6 @@ def pkt_sender(resend_pkts):
 
 def pkt_receiver(resend_pkts):
     global expected_pkt
-    global expected_ack
     global q
     global time_stamp_q
     global timer_duration

@@ -12,7 +12,6 @@ from frame import data_frame, ack_frame
 transmit_window = 7
 max_seq_num = transmit_window + 1
 receive_window = 1
-expected_ack = 0
 expected_pkt = 0
 frame_to_send = 0
 timer_duration = 1000 #in milliseconds
@@ -33,6 +32,13 @@ tempq = Queue(transmit_window)
 packet_drop_probability = 0.05
 ack_drop_probability = 0.05
 
+def should_drop(threshold) :
+    temp = random.uniform(0,1)
+    if(temp<=threshold) : return True
+    else : return False
+
+client_receiver_address = (socket.gethostbyname(socket.gethostname()),9999)
+
 receiver = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 ip = socket.gethostbyname(socket.gethostname())
 port = 9998
@@ -40,18 +46,19 @@ address = (ip, port)
 receiver.bind(address)
 receiver.setblocking(0)
 
-client_receiver_address = (socket.gethostbyname(socket.gethostname()),9999)
-
 # logfile_name = "host2_without_error.log"
 
 # # logging.basicConfig(filename=logfile_name, level=logging.DEBUG)
 
 base_time = time.time()*1000
 
-def should_drop(threshold) :
-    temp = random.uniform(0,1)
-    if(temp<=threshold) : return True
-    else : return False
+def send(new_packet_string, address):
+    global receiver
+    try:
+        receiver.sendto(new_packet_string, address)
+        return
+    except Exception as __e:
+        pass
 
 def respond_to_pck_resending(resend_pkts):
     #Resend all the buffered packets
@@ -63,14 +70,6 @@ def respond_to_pck_resending(resend_pkts):
     while (q.empty()==False) :
         tempq.put(q.get())
     resend_pkts.clear()
-
-def send(new_packet_string, address):
-    global receiver
-    try:
-        receiver.sendto(new_packet_string, address)
-        return
-    except Exception as __e:
-        pass
 
 def pkt_sender(resend_pkts):
     global transmit_window
@@ -124,7 +123,6 @@ def pkt_sender(resend_pkts):
 
 def pkt_receiver(resend_pkts):
     global expected_pkt
-    global expected_ack
     global q
     global time_stamp_q
     global timer_duration
